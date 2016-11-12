@@ -29,6 +29,26 @@ public class MusaCtrl : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+        #if UNITY_ANDROID || UNITY_IOS
+        if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
+        {
+            ray = Camera.main.ScreenPointToRay(Input.GetTouch(0).position);
+            if(Physics.Raycast(ray, out hit, 100.0f, floorLayer))
+            {
+                movePos = hit.point;
+                nv.SetDestination(movePos);
+                nv.Resume();
+                anim.SetBool("isRun", true);
+            }
+
+            if (nv.velocity.magnitude > 0.2f && nv.remainingDistance <= 0.1f)
+            {
+                anim.SetBool("isRun", false);
+            }
+        }
+        #endif
+
+        #if UNITY_EDITOR
         ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         if (Input.GetMouseButtonDown(0) && Physics.Raycast(ray, out hit, 100.0f, floorLayer))
         {
@@ -42,6 +62,7 @@ public class MusaCtrl : MonoBehaviour {
         {
             anim.SetBool("isRun", false);
         }
+        #endif
 
 //        if ((movePos - tr.position).sqrMagnitude >= 0.1f)
 //        {
